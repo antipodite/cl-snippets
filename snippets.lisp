@@ -4,7 +4,8 @@
   (:use :cl))
 
 (in-package snippets)
-;; Sequence utilities
+
+;; Sequence and functional programming utilities
 
 (defun curry (function &rest args)
   "Partially apply function to args and return new function"
@@ -21,6 +22,14 @@
   (if (atom l)
       (list l)
       (append (flatten* (first l)) (when (cdr l) (flatten* (rest l))))))
+
+(defun apply-successive (seq target func)
+  "Successively apply function until first non-nil result, returning it or 
+nil if no results"
+  (loop
+     for item in seq
+     for result = (funcall func item target)
+     thereis result))
 
 ;;; Threading macros, like in R
 
@@ -85,6 +94,29 @@ calls to str:replace"
           seps
           :initial-value (list string)))
 
+(defun min-edit-distance (source target &key costs)
+  "Levenshtein distance via Jurafsky and Martin. Turns out this is useful!"
+  (let ((dist-matrix (make-array (list (length source) (length target)))))
+    ;; Initialisation
+    (destructuring-bind (n m) (mapcar '1- (array-dimensions dist-matrix))
+      (loop
+         for i from 1 to n
+         do (setf (aref dist-matrix i 0)
+                  (1+ (aref dist-matrix (- i 1) 0))))
+      (loop
+         for i from 1 to m
+         do  (setf (aref dist-matrix 0 i)
+                   (1+ (aref dist-matrix 0 (- i 1)))))
+      ;; Recurrence relation
+      (loop
+         for i from 1 to n
+         do (loop
+               for j from 1 to m
+               do (setf (aref dist-matrix i j)
+                        (min (1+ (aref dist-matrix (1- i) j))
+                             (1+ (aref dist-matrix (1- i) (1- j)))
+                             (1+ (aref dist-matrix i (1- j)))))))
+      (aref dist-matrix n m))))
 
 ;;TODO: turn the following function into a generic macro
 
