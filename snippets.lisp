@@ -152,25 +152,26 @@ Call:
                 ('g' (lambda (match) (format t 'chur my g')))
 Expansion:
 ")
-             
-(defmacro with-package (package &rest body)
+
+(defmacro with-package (package &body body)
   "Avoid namespace conflicts without having to write the package prefix.
 CL already has with-package-iterator, but that does something slightly
 different. Helps with big packages that introduce their own syntax that
 might conflict, e.g. Mito and Parenscript"
-  `(progn
-     ,@(with-package-helper body package)))
-
-(defun has-symbol (package symbol)
-  (find-symbol (symbol-name symbol) package))
-
-(defun with-package-helper (expr pkg)
-  (loop
-     for el in expr
-     collect
-       (cond ((symbolp el)
-              (let ((pkg-sym (has-symbol pkg el)))
-                (if pkg-sym pkg-sym el)))
-             ((atom el)
-              el)
-             (t (with-package-helper el pkg)))))
+  (labels
+      ((package-has-symbol (symbol)
+         (find-symbol (symbol-name symbol) package))
+       
+       (replace-symbols (expr)
+         (loop
+            for el in expr
+            collect
+              (cond ((symbolp el)
+                     (if (package-has-symbol el)
+                         (package-has-symbol el)
+                         el))
+                    ((atom el)
+                     el)
+                    (t (replace-symbols el))))))
+    `(progn
+       ,@(replace-symbols body))))
