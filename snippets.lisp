@@ -159,7 +159,7 @@ CL already has with-package-iterator, but that does something slightly
 different. Helps with big packages that introduce their own syntax that
 might conflict, e.g. Mito and Parenscript"
   `(progn
-     ,@(with-package-helper* body package)))
+     ,@(with-package-helper body package)))
 
 (defun has-symbol (package symbol)
   (find-symbol (symbol-name symbol) package))
