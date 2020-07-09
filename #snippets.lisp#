@@ -177,9 +177,9 @@ might conflict, e.g. Mito and Parenscript"
        ,@(replace-symbols body))))
 
 (defmacro if-let (var test-expr pass-expr fail-expr)
-  "If, but bind the result of the test to a variable in the scope of the
-test pass expression. Wanted this a few times and I'm having a fun day 
-learning about macros so why not?"
+  "If, but bind the result of the test to a variable in the scope of
+the test pass expression. Wanted this a few times and I'm having a fun
+day learning about macros so why not?"
   (let ((result-val (gensym)))
     `(let ((,result-val ,test-expr))
        (if ,result-val
