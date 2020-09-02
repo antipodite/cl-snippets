@@ -185,3 +185,13 @@ learning about macros so why not?"
        (if ,result-val
            ,(subst result-val var pass-expr)
            ,fail-expr))))
+
+(defun aslice (vector start end)
+  "Slice an array, like in Python"
+  (let ((end (if (eq end :end)
+                 (length vector)
+                 end)))
+    (make-array (- end start)
+                :element-type (array-element-type vector)
+                :displaced-to vector
+                :displaced-index-offset start)))
