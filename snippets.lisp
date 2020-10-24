@@ -195,3 +195,8 @@ learning about macros so why not?"
                 :element-type (array-element-type vector)
                 :displaced-to vector
                 :displaced-index-offset start)))
+
+(defun print-symbol-with-package (symbol)
+  "Return the string representation of a symbol with the package prefix"
+  (let ((*package* (find-package :keyword)))
+    (prin1-to-string symbol)))
